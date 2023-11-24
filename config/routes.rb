@@ -6,5 +6,9 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Defines the root path route ("/")
-  resources :users
+  resources :users, except: :show
+  match "users/:docType/:docNum", to: "users#show", via: :get
+  
+  # Add logs routes
+
 end
