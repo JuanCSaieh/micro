@@ -14,12 +14,19 @@ class UsersController < ApplicationController
 		render json: @user.save!(user_params)
 	end
 
+	def show # search by docType and docNum!
+	end
+
+	def delete # search by docType and docNum!
+	end
+
 	def user_params
 		params.require(:user).permit(:docTypeoc,
 				:docNum, :firstName, :secondName, :lastName,
 				:dateBirth, :gender, :email, :phoneNumber)
 	end
-
+	
+	# search by docType and docNum!
 	#def set_user
 	#	@user = User.find(params[:id])
 	#end
