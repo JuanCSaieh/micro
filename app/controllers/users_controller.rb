@@ -9,7 +9,8 @@ class UsersController < ApplicationController
 	def create
 		@user = User.new(user_params)
 		if @user.save!
-			# TODO create logs
+			Log.create!(user_params.merge(opType: :crear,
+										created_at: Date.today))
 			render json: @user
 		else
 			render status: 400
@@ -19,19 +20,18 @@ class UsersController < ApplicationController
 	def show
 		@user = User.find_by(docType: params[:docType],
 							docNum: params[:docNum])
-
 		if @user
-			# TODO create logs
-			render json:@user
+			render json: @user
 		else
 			render status: 400
 		end
 	end
 
 	def update
-		#@user = User.find(params[:id])
 		if @user.update(user_params)
-			# TODO create logs
+			log_params = @user.attributes.except("id",
+											"created_at", "updated_at")
+			Log.create!(log_params.merge(opType: :modif))
 	      	render json: @user
 	    else
       		render status: 400
@@ -39,9 +39,10 @@ class UsersController < ApplicationController
 	end
 
 	def destroy
-		#@user = User.find(params[:id])
 		if @user.destroy
-			# TODO create logs
+			log_params = @user.attributes.except("id",
+											"created_at", "updated_at")
+			Log.create!(log_params.merge(opType: :elim))
 			render status: 200, json: @controller.to_json
 		else
 			render status: 400

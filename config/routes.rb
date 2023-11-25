@@ -8,7 +8,5 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   resources :users, except: :show
   match "users/:docType/:docNum", to: "users#show", via: :get
-  
-  # Add logs routes
-
+  resources :logs, only: :create
 end
