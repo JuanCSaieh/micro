@@ -7,9 +7,12 @@ class UsersController < ApplicationController
 	end
 
 	def create
-		@user = User.new(user_params)
+		req_params = {}
+		9.times { |i| req_params[user_params.keys[i]] = user_params.values[i] }
+
+		@user = User.new(req_params)
 		if @user.save!
-			Log.create!(user_params.merge(opType: :crear,
+			Log.create!(req_params.merge(opType: :crear,
 										created_at: Date.today))
 			render json: @user
 		else
@@ -20,15 +23,15 @@ class UsersController < ApplicationController
 	def show
 		@user = User.find_by(docType: params[:docType],
 							docNum: params[:docNum])
-		if @user
-			render json: @user
+		if @user.valid?
+			render json: @user.id
 		else
 			render status: 400
 		end
 	end
 
 	def update
-		if @user.update(user_params)
+		if @user.update!(user_params)
 			log_params = @user.attributes.except("id",
 											"created_at", "updated_at")
 			Log.create!(log_params.merge(opType: :modif))
@@ -52,9 +55,15 @@ class UsersController < ApplicationController
 	protected
 
 	def user_params
-		params.require(:user).permit(:docType,
+		params.permit(:docType,
 				:docNum, :firstName, :secondName, :lastName,
 				:dateBirth, :gender, :email, :phoneNumber)
+	end
+
+	def user_params_update
+		params.permit(:_json, :docType, :docNum, :firstName,
+				:secondName, :lastName, :dateBirth, :gender,
+				:email, :phoneNumber)[:_json]
 	end
 
 	def set_user
